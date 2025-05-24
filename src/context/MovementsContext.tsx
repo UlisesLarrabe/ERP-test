@@ -37,6 +37,11 @@ interface MovementsContextType {
   getMonthMovements: (month: string, local: string) => Promise<void>;
   monthMovements: Movement[];
   deleteMovementById: (id: string) => Promise<void>;
+  getMovementsByDateAndLocalAndType: (
+    date: string,
+    local: string,
+    type: string
+  ) => Promise<void>;
 }
 
 export const movementsCocntext = createContext<
@@ -109,6 +114,25 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     setMovements(data);
   };
 
+  const getMovementsByDateAndLocalAndType = async (
+    date: string,
+    local: string,
+    type: string
+  ) => {
+    const { data, error } = await supabase.rpc(
+      "get_movements_by_date_and_local_and_type",
+      {
+        date_input: date,
+        local_input: local,
+        type_input: type,
+      }
+    );
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    setMovements(data);
+  };
+
   const postMovement = async (movement: Movement) => {
     const { data, error } = await supabase
       .from("movements")
@@ -150,6 +174,7 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
         setMovements,
         getMovements,
         getMovementsWithFilters,
+        getMovementsByDateAndLocalAndType,
         postMovement,
         allMovements,
         getMonthMovements,

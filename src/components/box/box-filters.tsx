@@ -11,25 +11,37 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const BoxFilters = () => {
-  const { getMovementsWithFilters } = useMovementsContext();
+  const { getMovementsWithFilters, getMovementsByDateAndLocalAndType } =
+    useMovementsContext();
   const today = dayjs()
     .tz("America/Argentina/Buenos_Aires")
     .format("YYYY-MM-DD");
   const [date, setDate] = useState(today);
-  const [type, setType] = useState("all");
+  const [type, setType] = useState("income");
   const [paymentMethod, setPaymentMethod] = useState("all");
   const [local, setLocal] = useState(LOCALS[0]);
 
   const handleFilter = async () => {
-    await getMovementsWithFilters(
-      dayjs(date)
-        .add(1, "day")
-        .tz("America/Argentina/Buenos_Aires")
-        .format("YYYY-MM-DD"),
+    console.log(
+      dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
       local,
       type,
       paymentMethod
     );
+    if (paymentMethod === "all") {
+      await getMovementsByDateAndLocalAndType(
+        dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
+        local,
+        type
+      );
+    } else {
+      await getMovementsWithFilters(
+        dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
+        local,
+        type,
+        paymentMethod
+      );
+    }
   };
 
   return (
@@ -62,7 +74,6 @@ const BoxFilters = () => {
           className="p-2 border border-gray-300 rounded-lg"
           onChange={(e) => setType(e.target.value)}
         >
-          <option value="all">Todos</option>
           <option value="income">Ingreso</option>
           <option value="outcome">Egreso</option>
         </select>
