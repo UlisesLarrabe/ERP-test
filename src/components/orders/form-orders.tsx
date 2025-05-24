@@ -5,9 +5,9 @@ import dayjs from "dayjs";
 import { toast, Toaster } from "sonner";
 import PlusIcon from "@/icons/plus-icon";
 import { CLIENTS } from "@/consts/clients";
-import { payments, paymentsOptions } from "@/consts/payments-options";
+import { paymentsOptions } from "@/consts/payments-options";
 import { createClient } from "@/utils/supabase/client";
-import { useMovementsContext } from "@/hooks/useMovementsContext";
+import { useOrdersContext } from "@/hooks/useOrdersContext";
 
 interface DescriptionProduct {
   item: string;
@@ -46,7 +46,7 @@ const FormOrders = () => {
   );
   const [loading, setLoading] = useState(false);
   const [client, setClient] = useState(CLIENTS[0]);
-  const { postMovement } = useMovementsContext();
+  const { orders, setOrders } = useOrdersContext();
 
   const handleAddProduct = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,19 +93,9 @@ const FormOrders = () => {
       setCreatedAt(
         dayjs().tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DDTHH:mm")
       );
+      setOrders([...orders, data[0]]);
     }
-    if (data) {
-      await postMovement({
-        type: "income",
-        amount: totalPrice || 0,
-        created_at: usedDate,
-        reason: "Pedido",
-        payment_method: paymentMethod as payments,
-        local,
-        client,
-        order_id: data[0].id,
-      });
-    }
+
     setLoading(false);
   };
 
