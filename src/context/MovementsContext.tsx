@@ -51,7 +51,6 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
 
   const getMovements = async () => {
     const today = dayjs()
-      .add(1, "day")
       .tz("America/Argentina/Buenos_Aires")
       .format("YYYY-MM-DD");
     const { data, error } = await supabase.rpc("get_movements_by_date", {
@@ -63,6 +62,10 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     setMovements(data);
     setAllMovements(data);
   };
+
+  useEffect(() => {
+    getMovements();
+  }, []);
 
   const getMonthMovements = async (month: string, local: string) => {
     const { data, error } = await supabase.rpc("get_movements_by_month", {

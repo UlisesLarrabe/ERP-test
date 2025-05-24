@@ -1,4 +1,5 @@
 import Header from "@/components/header";
+import MoneySummary from "@/components/money-summary";
 import TitlePages from "@/components/title-pages";
 
 export default async function Caja() {
@@ -11,6 +12,7 @@ export default async function Caja() {
           href="/caja/retiro"
           button="Registrar retiro"
         />
+        <MoneySummary />
       </main>
     </>
   );
