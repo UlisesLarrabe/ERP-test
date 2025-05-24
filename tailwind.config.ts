@@ -11,6 +11,8 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        snow: "#fff9fb",
+        "eerie-black": "#252627",
       },
     },
   },
