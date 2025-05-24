@@ -6,6 +6,8 @@ import CashIcon from "@/icons/cash-icon";
 import MercadoPagoIcon from "@/icons/mercadopago-icon";
 import ReceiptIcon from "@/icons/receipt-icon";
 import CardIcon from "@/icons/card-icon";
+import { createClient } from "@/utils/supabase/client";
+import dayjs from "dayjs";
 
 const MoneySummary = () => {
   const { movements } = useMovementsContext();
@@ -14,44 +16,51 @@ const MoneySummary = () => {
   const [card, setCard] = useState(0);
   const [total_out, setTotal_out] = useState(0);
   const [total_in, setTotal_in] = useState(0);
+  const [summaryData, setSummaryData] = useState([
+    { payment_method: "cash", total: 0 },
+    { payment_method: "mercado_pago", total: 0 },
+    { payment_method: "card", total: 0 },
+  ]);
 
-  console.log(movements);
+  const supabase = createClient();
+  const summary = async () => {
+    const { data, error } = await supabase.rpc("get_summary_of_amounts", {
+      date_input: dayjs()
+        .tz("America/Argentina/Buenos_Aires")
+        .format("YYYY-MM-DD"),
+    });
+    if (error) {
+      throw new Error(error.message);
+    }
+    setSummaryData(data);
+  };
 
   useEffect(() => {
-    const cash = movements
-      .filter(
-        (movement) =>
-          movement.type === "income" && movement.payment_method === "cash"
-      )
-      .reduce((acc, movement) => acc + movement.amount, 0);
-    const mercado_pago = movements
-      .filter(
-        (movement) =>
-          movement.type === "income" &&
-          movement.payment_method === "mercado_pago"
-      )
-      .reduce((acc, movement) => acc + movement.amount, 0);
+    summary();
+  }, [movements]);
 
-    const card = movements
-      .filter(
-        (movement) =>
-          movement.type === "income" && movement.payment_method === "card"
-      )
-      .reduce((acc, movement) => acc + movement.amount, 0);
-
+  useEffect(() => {
+    const cash = summaryData.find(
+      (item) => item.payment_method === "cash"
+    )?.total;
+    const mercado_pago = summaryData.find(
+      (item) => item.payment_method === "mercado_pago"
+    )?.total;
+    const card = summaryData.find(
+      (item) => item.payment_method === "card"
+    )?.total;
+    setCash(cash || 0);
+    setMercado_pago(mercado_pago || 0);
+    setCard(card || 0);
     const total_out = movements
       .filter((movement) => movement.type === "outcome")
       .reduce((acc, movement) => acc + movement.amount, 0);
+    setTotal_out(total_out);
     const total_in = movements
       .filter((movement) => movement.type === "income")
       .reduce((acc, movement) => acc + movement.amount, 0);
-
-    setCash(cash);
-    setMercado_pago(mercado_pago);
-    setCard(card);
-    setTotal_out(total_out);
     setTotal_in(total_in);
-  }, [movements]);
+  }, [summary]);
 
   return (
     <section className="flex flex-col md:flex-row w-full gap-4">
