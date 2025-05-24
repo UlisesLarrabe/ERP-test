@@ -20,13 +20,10 @@ const OrdersFilters = () => {
 
   const handleLocalChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value === "allLocals") {
-      await getOrdersByDate(dayjs(date).add(1, "day").format("YYYY-MM-DD"));
+      await getOrdersByDate(dayjs(date).format("YYYY-MM-DD"));
     } else {
       setLocal(e.target.value);
-      await getByDateAndLocal(
-        dayjs(date).add(1, "day").format("YYYY-MM-DD"),
-        e.target.value
-      );
+      await getByDateAndLocal(dayjs(date).format("YYYY-MM-DD"), e.target.value);
     }
   };
 
