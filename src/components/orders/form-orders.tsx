@@ -48,6 +48,12 @@ const FormOrders = () => {
   const [client, setClient] = useState(CLIENTS[0]);
   const { orders, setOrders } = useOrdersContext();
 
+  const isDisabled =
+    description.length === 0 ||
+    totalPrice === null ||
+    loading ||
+    totalPrice === 0;
+
   const handleAddProduct = (e: React.FormEvent) => {
     e.preventDefault();
     setDescription([
@@ -260,6 +266,7 @@ const FormOrders = () => {
         type="submit"
         className="bg-eerie-black text-snow px-4 py-2 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleSubmit}
+        disabled={isDisabled}
       >
         {loading ? "Guardando pedido..." : "Guardar"}
       </button>
