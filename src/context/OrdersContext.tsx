@@ -48,7 +48,7 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
 
   const addOrder = async (order: Order) => {
     const { data, error } = await supabase.from("orders").insert(order);
-    if (error) {
+    if (error || data != null) {
       throw new Error("Error al agregar el pedido");
     }
   };

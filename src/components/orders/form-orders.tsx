@@ -5,8 +5,9 @@ import dayjs from "dayjs";
 import { toast, Toaster } from "sonner";
 import PlusIcon from "@/icons/plus-icon";
 import { CLIENTS } from "@/consts/clients";
-import { paymentsOptions } from "@/consts/payments-options";
+import { payments, paymentsOptions } from "@/consts/payments-options";
 import { createClient } from "@/utils/supabase/client";
+import { useMovementsContext } from "@/hooks/useMovementsContext";
 
 interface DescriptionProduct {
   item: string;
@@ -45,6 +46,7 @@ const FormOrders = () => {
   );
   const [loading, setLoading] = useState(false);
   const [client, setClient] = useState(CLIENTS[0]);
+  const { postMovement } = useMovementsContext();
 
   const handleAddProduct = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,14 +67,17 @@ const FormOrders = () => {
       ? dayjs.tz(createdAt, "America/Argentina/Buenos_Aires")
       : nowInBuenosAires.add(1, "day");
 
-    const { data, error } = await supabase.from("orders").insert({
-      local,
-      client,
-      created_at: usedDate,
-      payment_method: paymentMethod,
-      description,
-      total_price: totalPrice,
-    });
+    const { data, error } = await supabase
+      .from("orders")
+      .insert({
+        local,
+        client,
+        created_at: usedDate,
+        payment_method: paymentMethod,
+        description,
+        total_price: totalPrice,
+      })
+      .select();
     if (error) {
       toast.error("Error al agregar el pedido");
     } else {
@@ -88,6 +93,18 @@ const FormOrders = () => {
       setCreatedAt(
         dayjs().tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DDTHH:mm")
       );
+    }
+    if (data) {
+      await postMovement({
+        type: "income",
+        amount: totalPrice || 0,
+        created_at: usedDate,
+        reason: "Pedido",
+        payment_method: paymentMethod as payments,
+        local,
+        client,
+        order_id: data[0].id,
+      });
     }
     setLoading(false);
   };

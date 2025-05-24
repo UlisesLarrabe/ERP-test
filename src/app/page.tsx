@@ -20,7 +20,6 @@ interface Order {
 
 export default function Home() {
   const { orders } = useOrdersContext();
-  console.log(orders);
 
   return (
     <div>

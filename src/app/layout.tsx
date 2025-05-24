@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Onest } from "next/font/google";
 import "./globals.css";
 import { OrdersProvider } from "@/context/OrdersContext";
+import { MovementsProvider } from "@/context/MovementsContext";
 
 const onest = Onest({
   variable: "--font-onest",
@@ -21,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="es">
       <OrdersProvider>
-        <body className={`${onest.variable} bg-snow `}>{children}</body>
+        <MovementsProvider>
+          <body className={`${onest.variable} bg-snow `}>{children}</body>
+        </MovementsProvider>
       </OrdersProvider>
     </html>
   );

@@ -7,7 +7,6 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { toast, Toaster } from "sonner";
 import TheadBox from "../TheadBox";
-// import { useMovementsContext } from "@/hooks/useMovementsContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -15,13 +14,10 @@ dayjs.extend(timezone);
 const TableOrders = () => {
   const { orders, deleteOrderById } = useOrdersContext();
 
-  console.log(orders);
-  // const { getMovements } = useMovementsContext();
   const handleDeleteOrder = (id: string | undefined) => {
     if (!id) return;
     deleteOrderById(id)
       .then(() => {
-        // getMovements();
         toast.success("Pedido eliminado correctamente");
       })
       .catch(() => {
