@@ -13,13 +13,13 @@ interface Order {
   id?: string;
   local: string;
   total_price: number;
-  paymentMethod: "cash" | "mercado_pago" | "card";
+  payment_method: "cash" | "mercado_pago" | "card";
   description: {
     item: string;
     quantity: number;
     type: string;
   }[];
-  createdAt: Dayjs;
+  created_at: Dayjs;
   client: Client;
 }
 

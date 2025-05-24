@@ -14,6 +14,8 @@ dayjs.extend(timezone);
 const TableOrders = () => {
   const { orders, deleteOrderById } = useOrdersContext();
 
+  console.log(orders);
+
   const handleDeleteOrder = (id: string | undefined) => {
     if (!id) return;
     deleteOrderById(id)
@@ -42,16 +44,18 @@ const TableOrders = () => {
         <tbody className="bg-white divide-y divide-gray-200">
           {orders.toReversed().map((orders) => {
             const paymentString =
-              orders.paymentMethod === "cash"
+              orders.payment_method === "cash"
                 ? "Efectivo"
-                : orders.paymentMethod === "mercado_pago"
+                : orders.payment_method === "mercado_pago"
                 ? "Mercado Pago"
                 : "Tarjeta";
 
             return (
               <tr key={orders.id}>
                 <TDescription>
-                  {dayjs(orders.createdAt).format("HH:mm")}
+                  {dayjs(orders.created_at)
+                    .tz("America/Argentina/Buenos_Aires")
+                    .format("HH:mm")}
                 </TDescription>
 
                 <TDescription>{paymentString}</TDescription>
