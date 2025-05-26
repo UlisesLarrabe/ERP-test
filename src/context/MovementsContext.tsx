@@ -42,6 +42,10 @@ interface MovementsContextType {
     local: string,
     type: string
   ) => Promise<void>;
+  monthSummary: { payment_method: string; total: number }[];
+  monthSummaryTotal: { total: number }[];
+  getMonthSummary: (month: string) => Promise<void>;
+  getMonthSummaryTotal: (month: string) => Promise<void>;
 }
 
 export const movementsCocntext = createContext<
@@ -53,6 +57,25 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
   const [movements, setMovements] = useState<Movement[]>([]);
   const [allMovements, setAllMovements] = useState<Movement[]>([]);
   const [monthMovements, setMonthMovements] = useState<Movement[]>([]);
+  const [monthSummary, setMonthSummary] = useState([
+    {
+      payment_method: "cash",
+      total: 0,
+    },
+    {
+      payment_method: "card",
+      total: 0,
+    },
+    {
+      payment_method: "mercado_pago",
+      total: 0,
+    },
+  ]);
+  const [monthSummaryTotal, setMonthSummaryTotal] = useState([
+    {
+      total: 0,
+    },
+  ]);
 
   const getMovements = async () => {
     const today = dayjs()
@@ -91,6 +114,51 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
       );
       setMonthMovements(filteredData);
     }
+  };
+
+  const getMonthSummary = async (date: string) => {
+    const { data, error } = await supabase.rpc("get_month_summary", {
+      date_input: date,
+    });
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    if (data.length === 0) {
+      setMonthSummary([
+        {
+          payment_method: "cash",
+          total: 0,
+        },
+        {
+          payment_method: "card",
+          total: 0,
+        },
+        {
+          payment_method: "mercado_pago",
+          total: 0,
+        },
+      ]);
+      return;
+    }
+    setMonthSummary(data);
+  };
+
+  const getMonthSummaryTotal = async (date: string) => {
+    const { data, error } = await supabase.rpc("get_total_month_summary", {
+      date_input: date,
+    });
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    if (data.length === 0 || data[0].total === null) {
+      setMonthSummaryTotal([
+        {
+          total: 0,
+        },
+      ]);
+      return;
+    }
+    setMonthSummaryTotal(data);
   };
 
   const getMovementsWithFilters = async (
@@ -179,7 +247,11 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
         allMovements,
         getMonthMovements,
         monthMovements,
+        monthSummary,
+        monthSummaryTotal,
         deleteMovementById,
+        getMonthSummary,
+        getMonthSummaryTotal,
       }}
     >
       {children}

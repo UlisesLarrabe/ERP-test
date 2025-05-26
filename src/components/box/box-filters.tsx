@@ -20,7 +20,6 @@ const BoxFilters = () => {
   const [local, setLocal] = useState(LOCALS[0]);
 
   const handleFilter = async () => {
-    console.log(date);
     if (paymentMethod === "all") {
       await getMovementsByDateAndLocalAndType(
         dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
