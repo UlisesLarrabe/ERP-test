@@ -8,7 +8,7 @@ const SummaryArticle = ({
   isNotPrice,
 }: {
   title: string;
-  price: number | string;
+  price: number | string | undefined;
   info?: string;
   children?: React.ReactNode;
   isNotPrice?: boolean;
