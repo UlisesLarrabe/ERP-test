@@ -6,6 +6,7 @@ import timezone from "dayjs/plugin/timezone";
 import { LOCALS } from "@/consts/locals";
 import { useMovementsContext } from "@/hooks/useMovementsContext";
 import { paymentsOptions } from "@/consts/payments-options";
+import { useDateFilterContext } from "@/hooks/useDateFilterContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -13,21 +14,13 @@ dayjs.extend(timezone);
 const BoxFilters = () => {
   const { getMovementsWithFilters, getMovementsByDateAndLocalAndType } =
     useMovementsContext();
-  const today = dayjs()
-    .tz("America/Argentina/Buenos_Aires")
-    .format("YYYY-MM-DD");
-  const [date, setDate] = useState(today);
+  const { date, setDate } = useDateFilterContext();
   const [type, setType] = useState("income");
   const [paymentMethod, setPaymentMethod] = useState("all");
   const [local, setLocal] = useState(LOCALS[0]);
 
   const handleFilter = async () => {
-    console.log(
-      dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
-      local,
-      type,
-      paymentMethod
-    );
+    console.log(date);
     if (paymentMethod === "all") {
       await getMovementsByDateAndLocalAndType(
         dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),

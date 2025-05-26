@@ -7,7 +7,7 @@ import MercadoPagoIcon from "@/icons/mercadopago-icon";
 import ReceiptIcon from "@/icons/receipt-icon";
 import CardIcon from "@/icons/card-icon";
 import { createClient } from "@/utils/supabase/client";
-import dayjs from "dayjs";
+import { useDateFilterContext } from "@/hooks/useDateFilterContext";
 
 const MoneySummary = () => {
   const { movements } = useMovementsContext();
@@ -21,13 +21,12 @@ const MoneySummary = () => {
     { payment_method: "mercado_pago", total: 0 },
     { payment_method: "card", total: 0 },
   ]);
+  const { date } = useDateFilterContext();
 
   const supabase = createClient();
   const summary = async () => {
     const { data, error } = await supabase.rpc("get_summary_of_amounts", {
-      date_input: dayjs()
-        .tz("America/Argentina/Buenos_Aires")
-        .format("YYYY-MM-DD"),
+      date_input: date,
     });
     if (error) {
       throw new Error(error.message);
