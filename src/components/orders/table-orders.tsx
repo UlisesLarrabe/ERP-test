@@ -14,8 +14,6 @@ dayjs.extend(timezone);
 const TableOrders = () => {
   const { orders, deleteOrderById } = useOrdersContext();
 
-  console.log(orders);
-
   const handleDeleteOrder = (id: string | undefined) => {
     if (!id) return;
     deleteOrderById(id)
