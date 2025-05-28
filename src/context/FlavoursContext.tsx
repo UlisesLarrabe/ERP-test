@@ -1,9 +1,9 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 interface Flavour {
-  id?: number;
+  id?: number | string;
   name: string;
   stock: number;
   local: string;
@@ -22,16 +22,6 @@ export const flavoursContext = createContext<FlavourContext | null>(null);
 export function FlavoursProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const [flavours, setFlavours] = useState<Flavour[]>([]);
-
-  // const getFlavours = async () => {
-  //   const response = await fetch(`${API_URL}/flavours`);
-  //   const data = await response.json();
-  //   setFlavours(data);
-  // };
-
-  // useEffect(() => {
-  //   getFlavours();
-  // }, []);
 
   const addFlavour = async (flavour: Flavour) => {
     const { data, error } = await supabase
