@@ -2,10 +2,15 @@ import Header from "@/components/header";
 import InventoryFilters from "@/components/inventory/inventory-filters";
 import InventoryTable from "@/components/inventory/inventory-table";
 import TitlePages from "@/components/title-pages";
-
-import React from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const page = async () => {
+  const verifyCookies = await cookies();
+  const token = verifyCookies.has("auth");
+  if (!token) {
+    redirect("/login");
+  }
   return (
     <>
       <Header />

@@ -2,8 +2,15 @@ import OrdersFilters from "@/components/orders/orders-filters";
 import TableOrders from "@/components/orders/table-orders";
 import TitlePages from "@/components/title-pages";
 import Header from "@/components/header";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-const Pedidos = () => {
+const Pedidos = async () => {
+  const verifyCookies = await cookies();
+  const token = verifyCookies.has("auth");
+  if (!token) {
+    redirect("/login");
+  }
   return (
     <>
       <Header />
