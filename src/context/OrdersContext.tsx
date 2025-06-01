@@ -38,7 +38,10 @@ export const OrdersContext = createContext<OrdersContextType | undefined>(
 );
 
 export function OrdersProvider({ children }: { children: React.ReactNode }) {
-  const today = dayjs().format("YYYY-MM-DD");
+  const today = dayjs()
+    .add(1, "day")
+    .tz("America/Argentina/Buenos_Aires")
+    .format("YYYY-MM-DD");
   const supabase = createClient();
   useEffect(() => {
     getOrdersByDate(today);

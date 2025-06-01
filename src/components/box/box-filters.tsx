@@ -22,13 +22,19 @@ const BoxFilters = () => {
   const handleFilter = async () => {
     if (paymentMethod === "all") {
       await getMovementsByDateAndLocalAndType(
-        dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
+        dayjs(date)
+          .add(1, "day")
+          .tz("America/Argentina/Buenos_Aires")
+          .format("YYYY-MM-DD"),
         local,
         type
       );
     } else {
       await getMovementsWithFilters(
-        dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
+        dayjs(date)
+          .add(1, "day")
+          .tz("America/Argentina/Buenos_Aires")
+          .format("YYYY-MM-DD"),
         local,
         type,
         paymentMethod
