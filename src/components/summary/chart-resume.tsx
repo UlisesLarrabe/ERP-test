@@ -29,9 +29,9 @@ const ChartResume = () => {
               type: "bar",
               id: "base",
               data: [
-                monthSummary[0].total,
-                monthSummary[1].total,
-                monthSummary[2].total,
+                monthSummary[0]?.total || 0,
+                monthSummary[1]?.total || 0,
+                monthSummary[2]?.total || 0,
               ],
               color: "#fcc8b2",
             },
