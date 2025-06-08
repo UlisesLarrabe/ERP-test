@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import { toast, Toaster } from "sonner";
 import CookieBanner from "./cookie-banner";
+import { createClient } from "@/utils/supabase/client";
+
+const supabase = createClient();
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -15,21 +18,43 @@ const LoginPage = () => {
     password.trim() === "" ||
     loading;
 
+  async function signInWithEmail(email: string, password: string) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { data, error };
+  }
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((response) => response.json())
+    signInWithEmail(email, password)
       .then((data) => {
         console.log(data);
-        if (data.status === 200) {
-          window.location.href = "/";
-        } else {
+        if (data.error) {
           toast.error("Credenciales inválidas");
+        } else {
+          toast.success("Inicio de sesión exitoso");
+          fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === 200) {
+                window.location.href = "/";
+              } else {
+                toast.error("Ocurrió un error inesperado");
+              }
+            })
+            .catch(() => {
+              toast.error("Ocurrió un error inesperado");
+            })
+            .finally(() => {
+              setLoading(false);
+            });
         }
       })
       .catch(() => {

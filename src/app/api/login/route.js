@@ -1,17 +1,24 @@
 import { cookies } from "next/headers";
 
 export async function POST(req) {
-  const body = await req.json();
-  const passwordRequired = process.env.PASSWORD_LOGIN;
-  const emailRequired = process.env.EMAIL_LOGIN;
+  const { data } = await req.json();
   const newCookies = await cookies();
-  if (body.password === passwordRequired && body.email === emailRequired) {
+  const user = data.user;
+
+  if (data) {
+    const userAuth = {
+      email: user.email,
+      id: user.id,
+      role: process.env.EMAIL_ADMIN === user.email ? "admin" : "employee",
+    };
+
     newCookies.set({
       name: "auth",
-      value: { isLogged: true },
-      maxAge: 60 * 60 * 24 * 7,
+      value: JSON.stringify(userAuth),
+      maxAge: data.session.expires_at,
       httpOnly: true,
     });
+
     return Response.json({
       status: 200,
       message: "Login success",

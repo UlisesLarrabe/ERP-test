@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 export default async function Home() {
   const verifyCookies = await cookies();
-  const token = verifyCookies.has("auth");
+  const token = verifyCookies.get("auth");
   if (!token) {
     redirect("/login");
   }
