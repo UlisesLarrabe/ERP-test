@@ -25,7 +25,7 @@ const Hero = ({ user }: { user: User }) => {
         href="/caja/comienzo"
         button="Agregar comienzo de caja"
       />
-      <HeroSummary />
+      {user.role === "admin" && <HeroSummary />}
       <HeroLocals />
       <AdditionalInfo />
     </main>

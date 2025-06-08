@@ -25,21 +25,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <OrdersProvider>
-        <MovementsProvider>
-          <DateFilterProvider>
-            <FlavoursProvider>
-              <LocalFilterProvider>
-                <UserProvider>
+      <UserProvider>
+        <LocalFilterProvider>
+          <OrdersProvider>
+            <MovementsProvider>
+              <DateFilterProvider>
+                <FlavoursProvider>
                   <body className={`${onest.variable} bg-snow `}>
                     {children}
                   </body>
-                </UserProvider>
-              </LocalFilterProvider>
-            </FlavoursProvider>
-          </DateFilterProvider>
-        </MovementsProvider>
-      </OrdersProvider>
+                </FlavoursProvider>
+              </DateFilterProvider>
+            </MovementsProvider>
+          </OrdersProvider>
+        </LocalFilterProvider>
+      </UserProvider>
     </html>
   );
 }

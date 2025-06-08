@@ -25,7 +25,6 @@ const HeroLocals = () => {
         value={local}
         onChange={(e) => onChange(e.target.value)}
       >
-        <option value="">Todos los locales</option>
         {LOCALS.map((local) => (
           <option key={local} value={local}>
             {local}

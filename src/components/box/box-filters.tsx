@@ -15,7 +15,7 @@ const BoxFilters = () => {
   const { getMovementsWithFilters, getMovementsByDateAndLocalAndType } =
     useMovementsContext();
   const { date, setDate } = useDateFilterContext();
-  const [type, setType] = useState("income");
+  const [type, setType] = useState("all");
   const [paymentMethod, setPaymentMethod] = useState("all");
   const [local, setLocal] = useState(LOCALS[0]);
 
@@ -69,6 +69,7 @@ const BoxFilters = () => {
           className="p-2 border border-gray-300 rounded-lg"
           onChange={(e) => setType(e.target.value)}
         >
+          <option value="all">Todos</option>
           <option value="income">Ingreso</option>
           <option value="outcome">Egreso</option>
         </select>

@@ -6,6 +6,8 @@ import React, { createContext, useEffect, useState } from "react";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { createClient } from "@/utils/supabase/client";
+import { useLocalContext } from "@/hooks/useLocalContext";
+import { useUserContext } from "@/hooks/useUserContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -78,7 +80,9 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
   ]);
 
   const getMovements = async () => {
-    const today = dayjs().format("YYYY-MM-DD");
+    const today = dayjs()
+      .tz("America/Argentina/Buenos_Aires")
+      .format("YYYY-MM-DD");
     const { data, error } = await supabase.rpc("get_movements_by_date", {
       date_input: today,
     });
@@ -89,9 +93,34 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     setAllMovements(data);
   };
 
+  const { local: localEmployee } = useLocalContext();
+  const { user } = useUserContext();
+
+  const getMovementsByDateAndLocal = async (date: string, local: string) => {
+    const { data, error } = await supabase.rpc(
+      "get_movements_by_date_and_local",
+      {
+        date_input: date,
+        local_input: local,
+      }
+    );
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    setMovements(data);
+    setAllMovements(data);
+  };
+
   useEffect(() => {
-    getMovements();
-  }, []);
+    const today = dayjs()
+      .tz("America/Argentina/Buenos_Aires")
+      .format("YYYY-MM-DD");
+    if (user.role === "admin") {
+      getMovements();
+    } else {
+      getMovementsByDateAndLocal(today, localEmployee);
+    }
+  }, [localEmployee]);
 
   const getMonthMovements = async (month: string, local: string) => {
     const { data, error } = await supabase.rpc("get_movements_by_month", {
@@ -165,6 +194,21 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     type: string,
     paymentMethod: string
   ) => {
+    if (type === "all") {
+      const { data, error } = await supabase.rpc(
+        "get_movements_by_date_and_filters_except_type",
+        {
+          date_input: date,
+          local_input: local,
+          payment_method_input: paymentMethod,
+        }
+      );
+      if (error) {
+        throw new Error("Error al obtener los movimientos");
+      }
+      setMovements(data);
+      return;
+    }
     const { data, error } = await supabase.rpc(
       "get_movements_by_date_and_filters",
       {
@@ -185,6 +229,10 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     local: string,
     type: string
   ) => {
+    if (type === "all") {
+      await getMovementsByDateAndLocal(date, local);
+      return;
+    }
     const { data, error } = await supabase.rpc(
       "get_movements_by_date_and_local_and_type",
       {

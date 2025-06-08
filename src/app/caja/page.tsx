@@ -1,4 +1,4 @@
-import BoxFilters from "@/components/box/box-filters";
+import FiltersAdmin from "@/components/box/filters-admin";
 import TableBox from "@/components/box/table-box";
 import Header from "@/components/header";
 import MoneySummary from "@/components/money-summary";
@@ -23,7 +23,7 @@ export default async function Caja() {
         />
         <MoneySummary />
         <section className="flex flex-col md:flex-row  gap-4 justify-center ">
-          <BoxFilters />
+          <FiltersAdmin />
           <TableBox />
         </section>
       </main>

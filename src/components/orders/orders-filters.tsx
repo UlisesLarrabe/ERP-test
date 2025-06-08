@@ -5,6 +5,8 @@ import dayjs from "dayjs";
 import React, { useState } from "react";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { useUserContext } from "@/hooks/useUserContext";
+import { useLocalContext } from "@/hooks/useLocalContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -12,6 +14,8 @@ dayjs.extend(timezone);
 const OrdersFilters = () => {
   const { getOrdersByDate, getByDateAndLocal } = useOrdersContext();
   const [local, setLocal] = useState("allLocals");
+  const { user } = useUserContext();
+  const { local: localEmployee } = useLocalContext();
 
   const today = dayjs()
     .tz("America/Argentina/Buenos_Aires")
@@ -32,20 +36,27 @@ const OrdersFilters = () => {
       .tz("America/Argentina/Buenos_Aires")
       .format("YYYY-MM-DD");
     setDate(date);
-    if (local === "allLocals") {
-      await getOrdersByDate(
-        dayjs(date)
-          .add(1, "day")
-          .tz("America/Argentina/Buenos_Aires")
-          .format("YYYY-MM-DD")
-      );
+    if (user.role === "admin") {
+      if (local === "allLocals") {
+        await getOrdersByDate(
+          dayjs(date)
+            .add(1, "day")
+            .tz("America/Argentina/Buenos_Aires")
+            .format("YYYY-MM-DD")
+        );
+      } else {
+        await getByDateAndLocal(
+          dayjs(date)
+            .add(1, "day")
+            .tz("America/Argentina/Buenos_Aires")
+            .format("YYYY-MM-DD"),
+          local
+        );
+      }
     } else {
       await getByDateAndLocal(
-        dayjs(date)
-          .add(1, "day")
-          .tz("America/Argentina/Buenos_Aires")
-          .format("YYYY-MM-DD"),
-        local
+        dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
+        localEmployee
       );
     }
   };
@@ -63,20 +74,22 @@ const OrdersFilters = () => {
             onChange={handleDateChange}
           />
         </div>
-        <div className="flex flex-col gap-2 w-full">
-          <label className="text-lg font-medium text-gray-700">Local</label>
-          <select
-            onChange={handleLocalChange}
-            className="p-2 border  border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="allLocals">Todos los locales</option>
-            {LOCALS.map((local) => (
-              <option key={local} value={local}>
-                {local}
-              </option>
-            ))}
-          </select>
-        </div>
+        {user.role === "admin" && (
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-lg font-medium text-gray-700">Local</label>
+            <select
+              onChange={handleLocalChange}
+              className="p-2 border  border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="allLocals">Todos los locales</option>
+              {LOCALS.map((local) => (
+                <option key={local} value={local}>
+                  {local}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
     </section>
   );
