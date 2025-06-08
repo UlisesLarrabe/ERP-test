@@ -78,10 +78,7 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
   ]);
 
   const getMovements = async () => {
-    const today = dayjs()
-      .add(1, "day")
-      .tz("America/Argentina/Buenos_Aires")
-      .format("YYYY-MM-DD");
+    const today = dayjs().format("YYYY-MM-DD");
     const { data, error } = await supabase.rpc("get_movements_by_date", {
       date_input: today,
     });
