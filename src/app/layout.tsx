@@ -5,6 +5,8 @@ import { OrdersProvider } from "@/context/OrdersContext";
 import { MovementsProvider } from "@/context/MovementsContext";
 import { DateFilterProvider } from "@/context/DateFilterContext";
 import { FlavoursProvider } from "@/context/FlavoursContext";
+import { LocalFilterProvider } from "@/context/LocalFilterContext";
+import { UserProvider } from "@/context/UserContext";
 
 const onest = Onest({
   variable: "--font-onest",
@@ -27,7 +29,13 @@ export default function RootLayout({
         <MovementsProvider>
           <DateFilterProvider>
             <FlavoursProvider>
-              <body className={`${onest.variable} bg-snow `}>{children}</body>
+              <LocalFilterProvider>
+                <UserProvider>
+                  <body className={`${onest.variable} bg-snow `}>
+                    {children}
+                  </body>
+                </UserProvider>
+              </LocalFilterProvider>
             </FlavoursProvider>
           </DateFilterProvider>
         </MovementsProvider>

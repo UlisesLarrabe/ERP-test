@@ -9,10 +9,11 @@ export default async function Home() {
   if (!token) {
     redirect("/login");
   }
+  const user = JSON.parse(token.value);
   return (
     <main>
       <Header />
-      <Hero />
+      <Hero user={user} />
     </main>
   );
 }
