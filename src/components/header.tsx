@@ -2,9 +2,11 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useUserContext } from "@/hooks/useUserContext";
 
 const Header = () => {
   const pathname = usePathname();
+  const { user } = useUserContext();
 
   const linkClass = (href: string) =>
     pathname === href
@@ -34,11 +36,13 @@ const Header = () => {
             Caja
           </Link>
         </li>
-        <li>
-          <Link href="/resumen" className={linkClass("/resumen")}>
-            Resumen
-          </Link>
-        </li>
+        {user.role === "admin" && (
+          <li>
+            <Link href="/resumen" className={linkClass("/resumen")}>
+              Resumen
+            </Link>
+          </li>
+        )}
       </ul>
     </nav>
   );
