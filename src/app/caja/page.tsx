@@ -9,12 +9,14 @@ import SetUser from "@/components/set-user";
 
 export default async function Caja() {
   const verifyCookies = await cookies();
-  const token = verifyCookies.has("auth");
+  const token = verifyCookies.get("auth");
   if (!token) {
     redirect("/login");
   }
+  const user = JSON.parse(token.value);
+  const width = user.role === "admin" ? "w-full" : "w-full max-w-7xl mx-auto";
   return (
-    <>
+    <div className={width}>
       <Header />
       <SetUser />
       <main className="w-full flex flex-col p-4 gap-4">
@@ -29,6 +31,6 @@ export default async function Caja() {
           <TableBox />
         </section>
       </main>
-    </>
+    </div>
   );
 }

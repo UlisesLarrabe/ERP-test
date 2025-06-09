@@ -11,7 +11,7 @@ const page = async () => {
     redirect("/login");
   }
   return (
-    <>
+    <div className="w-full max-w-7xl mx-auto">
       <Header />
       <main className="w-full flex flex-col p-4 gap-4">
         <TitlePages
@@ -22,7 +22,7 @@ const page = async () => {
 
         <InventoryTable />
       </main>
-    </>
+    </div>
   );
 };
 

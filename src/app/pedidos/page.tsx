@@ -13,7 +13,7 @@ const Pedidos = async () => {
     redirect("/login");
   }
   return (
-    <>
+    <div className="w-full max-w-7xl mx-auto">
       <Header />
       <SetUser />
       <main className="w-full flex flex-col p-4 gap-4">
@@ -27,7 +27,7 @@ const Pedidos = async () => {
           <TableOrders />
         </section>
       </main>
-    </>
+    </div>
   );
 };
 export default Pedidos;

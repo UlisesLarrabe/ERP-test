@@ -11,7 +11,7 @@ export default async function Home() {
   }
   const user = JSON.parse(token.value);
   return (
-    <main>
+    <main className="w-full max-w-7xl mx-auto">
       <Header />
       <Hero user={user} />
     </main>
