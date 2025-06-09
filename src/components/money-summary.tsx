@@ -8,9 +8,26 @@ import ReceiptIcon from "@/icons/receipt-icon";
 import CardIcon from "@/icons/card-icon";
 import { createClient } from "@/utils/supabase/client";
 import { useDateFilterContext } from "@/hooks/useDateFilterContext";
+import { useLocalContext } from "@/hooks/useLocalContext";
+import dayjs from "dayjs";
+import { payments } from "@/consts/payments-options";
+import { Client } from "@/consts/clients";
+
+interface Movement {
+  id?: string;
+  type: string;
+  amount: number;
+  created_at: string | dayjs.Dayjs;
+  reason?: string;
+  payment_method: payments;
+  local: string;
+  client: Client;
+  order_id?: string;
+}
 
 const MoneySummary = () => {
-  const { movements } = useMovementsContext();
+  const { getMovementsByDateAndLocalWithoutSaving } = useMovementsContext();
+  const [movements, setMovements] = useState<Movement[]>([]);
   const [cash, setCash] = useState(0);
   const [mercado_pago, setMercado_pago] = useState(0);
   const [card, setCard] = useState(0);
@@ -22,6 +39,19 @@ const MoneySummary = () => {
     { payment_method: "card", total: 0 },
   ]);
   const { date } = useDateFilterContext();
+  const { local } = useLocalContext();
+
+  const getMovements = async () => {
+    const movements = await getMovementsByDateAndLocalWithoutSaving(
+      date,
+      local
+    );
+    setMovements(movements);
+  };
+
+  useEffect(() => {
+    getMovements();
+  }, [date, local]);
 
   const supabase = createClient();
   const summary = async () => {

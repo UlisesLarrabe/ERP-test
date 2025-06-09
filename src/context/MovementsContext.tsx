@@ -48,6 +48,11 @@ interface MovementsContextType {
   monthSummaryTotal: { total: number }[];
   getMonthSummary: (month: string) => Promise<void>;
   getMonthSummaryTotal: (month: string) => Promise<void>;
+  getMovementsByDateAndLocal: (date: string, local: string) => Promise<void>;
+  getMovementsByDateAndLocalWithoutSaving: (
+    date: string,
+    local: string
+  ) => Promise<Movement[]>;
 }
 
 export const movementsCocntext = createContext<
@@ -109,6 +114,23 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     }
     setMovements(data);
     setAllMovements(data);
+  };
+
+  const getMovementsByDateAndLocalWithoutSaving = async (
+    date: string,
+    local: string
+  ) => {
+    const { data, error } = await supabase.rpc(
+      "get_movements_by_date_and_local",
+      {
+        date_input: date,
+        local_input: local,
+      }
+    );
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    return data;
   };
 
   useEffect(() => {
@@ -298,6 +320,8 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
         deleteMovementById,
         getMonthSummary,
         getMonthSummaryTotal,
+        getMovementsByDateAndLocalWithoutSaving,
+        getMovementsByDateAndLocal,
       }}
     >
       {children}
