@@ -142,7 +142,7 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     } else {
       getMovementsByDateAndLocal(today, localEmployee);
     }
-  }, [localEmployee]);
+  }, []);
 
   const getMonthMovements = async (month: string, local: string) => {
     const { data, error } = await supabase.rpc("get_movements_by_month", {

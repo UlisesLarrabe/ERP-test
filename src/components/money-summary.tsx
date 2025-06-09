@@ -55,9 +55,23 @@ const MoneySummary = () => {
 
   const supabase = createClient();
   const summary = async () => {
-    const { data, error } = await supabase.rpc("get_summary_of_amounts", {
-      date_input: date,
-    });
+    if (local === "all") {
+      const { data, error } = await supabase.rpc("get_summary_of_amounts", {
+        date_input: date,
+      });
+      if (error) {
+        throw new Error(error.message);
+      }
+      setSummaryData(data);
+      return;
+    }
+    const { data, error } = await supabase.rpc(
+      "get_summary_of_amounts_by_local",
+      {
+        date_input: date,
+        local_input: local,
+      }
+    );
     if (error) {
       throw new Error(error.message);
     }
@@ -66,7 +80,7 @@ const MoneySummary = () => {
 
   useEffect(() => {
     summary();
-  }, [movements]);
+  }, [date, local]);
 
   useEffect(() => {
     const cash = summaryData.find(

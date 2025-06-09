@@ -1,10 +1,10 @@
 import FiltersAdmin from "@/components/box/filters-admin";
-import SummaryAdmin from "@/components/box/summary-admin";
 import TableBox from "@/components/box/table-box";
 import Header from "@/components/header";
 import TitlePages from "@/components/title-pages";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import MoneySummary from "@/components/money-summary";
 
 export default async function Caja() {
   const verifyCookies = await cookies();
@@ -21,7 +21,7 @@ export default async function Caja() {
           href="/caja/retiro"
           button="Registrar retiro"
         />
-        <SummaryAdmin />
+        <MoneySummary />
         <section className="flex flex-col md:flex-row  gap-4 justify-center ">
           <FiltersAdmin />
           <TableBox />

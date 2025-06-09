@@ -10,14 +10,15 @@ import { useDateFilterContext } from "@/hooks/useDateFilterContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+import { useLocalContext } from "@/hooks/useLocalContext";
 
 const BoxFilters = () => {
   const { getMovementsWithFilters, getMovementsByDateAndLocalAndType } =
     useMovementsContext();
+  const { local, setLocal } = useLocalContext();
   const { date, setDate } = useDateFilterContext();
   const [type, setType] = useState("all");
   const [paymentMethod, setPaymentMethod] = useState("all");
-  const [local, setLocal] = useState(LOCALS[0]);
 
   const handleFilter = async () => {
     if (paymentMethod === "all") {
@@ -97,6 +98,7 @@ const BoxFilters = () => {
           id="local"
           className="p-2 border border-gray-300 rounded-lg"
           onChange={(e) => setLocal(e.target.value)}
+          value={local}
         >
           {LOCALS.map((local) => (
             <option key={local} value={local}>
