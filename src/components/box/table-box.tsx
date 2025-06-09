@@ -6,15 +6,20 @@ import timezone from "dayjs/plugin/timezone";
 import { useMovementsContext } from "@/hooks/useMovementsContext";
 import TheadBox from "../TheadBox";
 import TDescription from "../TDescription";
+import { useUserContext } from "@/hooks/useUserContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const TableBox = () => {
   const { movements } = useMovementsContext();
+  const { user } = useUserContext();
+  const width = user.role === "admin" ? "md:w-2/3" : "w-full";
 
   return (
-    <div className="p-2 border flex justify-center flex-col border-gray-300 rounded-lg min-w-3xs min-h-32 gap-2 w-full md:w-2/3 max-h-[500px] overflow-y-auto">
+    <div
+      className={`p-2 border flex justify-center flex-col border-gray-300 rounded-lg min-w-3xs min-h-32 gap-2 ${width} max-h-[500px] overflow-y-auto`}
+    >
       <h2 className="font-semibold text-2xl">Movimientos del día</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">

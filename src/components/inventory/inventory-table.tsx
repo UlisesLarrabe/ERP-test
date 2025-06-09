@@ -1,14 +1,16 @@
 "use client";
 import { useFlavoursContext } from "@/hooks/useFlavoursContext";
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import TheadBox from "../TheadBox";
 import Tdescription from "../TDescription";
 import { REFRIGERATORS_INFO } from "@/consts/refrigerators";
+import { useLocalContext } from "@/hooks/useLocalContext";
 
 const InventoryTable = () => {
   const { flavours } = useFlavoursContext();
-  console.log(flavours);
+  const { local } = useLocalContext();
+  const { getWithFilters } = useFlavoursContext();
 
   const groupedByRefrigerator: { [key: string]: typeof flavours } = {};
   REFRIGERATORS_INFO.forEach(({ value }) => {
@@ -17,6 +19,10 @@ const InventoryTable = () => {
     );
   });
   const noCategory = flavours.filter((flavour) => !flavour.refrigerator);
+
+  useEffect(() => {
+    getWithFilters({ local });
+  }, [local]);
 
   return (
     <div className="overflow-x-auto">

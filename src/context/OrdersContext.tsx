@@ -5,6 +5,8 @@ import { type Client } from "@/consts/clients";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { createClient } from "@/utils/supabase/client";
+import { useUserContext } from "@/hooks/useUserContext";
+import { useLocalContext } from "@/hooks/useLocalContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -38,14 +40,18 @@ export const OrdersContext = createContext<OrdersContextType | undefined>(
 );
 
 export function OrdersProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useUserContext();
+  const { local: localEmployee } = useLocalContext();
   const today = dayjs()
-    .add(1, "day")
     .tz("America/Argentina/Buenos_Aires")
     .format("YYYY-MM-DD");
   const supabase = createClient();
   useEffect(() => {
-    getOrdersByDate(today);
-  }, []);
+    getByDateAndLocal(
+      today,
+      user.role === "admin" ? "allLocals" : localEmployee
+    );
+  }, [localEmployee]);
 
   const [orders, setOrders] = useState<Order[]>([]);
 

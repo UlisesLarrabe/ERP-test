@@ -6,6 +6,8 @@ import React, { createContext, useEffect, useState } from "react";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { createClient } from "@/utils/supabase/client";
+import { useLocalContext } from "@/hooks/useLocalContext";
+import { useUserContext } from "@/hooks/useUserContext";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -46,6 +48,13 @@ interface MovementsContextType {
   monthSummaryTotal: { total: number }[];
   getMonthSummary: (month: string) => Promise<void>;
   getMonthSummaryTotal: (month: string) => Promise<void>;
+  getMovementsByDateAndLocal: (date: string, local: string) => Promise<void>;
+  getMovementsByDateAndLocalWithoutSaving: (
+    date: string,
+    local: string
+  ) => Promise<Movement[]>;
+  getMonthSummaryByLocal: (month: string, local: string) => Promise<void>;
+  getMonthSummaryTotalByLocal: (month: string, local: string) => Promise<void>;
 }
 
 export const movementsCocntext = createContext<
@@ -78,7 +87,9 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
   ]);
 
   const getMovements = async () => {
-    const today = dayjs().format("YYYY-MM-DD");
+    const today = dayjs()
+      .tz("America/Argentina/Buenos_Aires")
+      .format("YYYY-MM-DD");
     const { data, error } = await supabase.rpc("get_movements_by_date", {
       date_input: today,
     });
@@ -89,8 +100,50 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     setAllMovements(data);
   };
 
+  const { local: localEmployee } = useLocalContext();
+  const { user } = useUserContext();
+
+  const getMovementsByDateAndLocal = async (date: string, local: string) => {
+    const { data, error } = await supabase.rpc(
+      "get_movements_by_date_and_local",
+      {
+        date_input: date,
+        local_input: local,
+      }
+    );
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    setMovements(data);
+    setAllMovements(data);
+  };
+
+  const getMovementsByDateAndLocalWithoutSaving = async (
+    date: string,
+    local: string
+  ) => {
+    const { data, error } = await supabase.rpc(
+      "get_movements_by_date_and_local",
+      {
+        date_input: date,
+        local_input: local,
+      }
+    );
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    return data;
+  };
+
   useEffect(() => {
-    getMovements();
+    const today = dayjs()
+      .tz("America/Argentina/Buenos_Aires")
+      .format("YYYY-MM-DD");
+    if (user.role === "admin") {
+      getMovements();
+    } else {
+      getMovementsByDateAndLocal(today, localEmployee);
+    }
   }, []);
 
   const getMonthMovements = async (month: string, local: string) => {
@@ -141,6 +194,56 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     setMonthSummary(data);
   };
 
+  const getMonthSummaryByLocal = async (date: string, local: string) => {
+    const { data, error } = await supabase.rpc("get_month_summary_by_local", {
+      date_input: date,
+      local_input: local,
+    });
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    if (data.length === 0) {
+      setMonthSummary([
+        {
+          payment_method: "cash",
+          total: 0,
+        },
+        {
+          payment_method: "card",
+          total: 0,
+        },
+        {
+          payment_method: "mercado_pago",
+          total: 0,
+        },
+      ]);
+      return;
+    }
+    setMonthSummary(data);
+  };
+
+  const getMonthSummaryTotalByLocal = async (date: string, local: string) => {
+    const { data, error } = await supabase.rpc(
+      "get_total_month_summary_by_local",
+      {
+        date_input: date,
+        local_input: local,
+      }
+    );
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    if (data.length === 0 || data[0].total === null) {
+      setMonthSummaryTotal([
+        {
+          total: 0,
+        },
+      ]);
+      return;
+    }
+    setMonthSummaryTotal(data);
+  };
+
   const getMonthSummaryTotal = async (date: string) => {
     const { data, error } = await supabase.rpc("get_total_month_summary", {
       date_input: date,
@@ -165,6 +268,21 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     type: string,
     paymentMethod: string
   ) => {
+    if (type === "all") {
+      const { data, error } = await supabase.rpc(
+        "get_movements_by_date_and_filters_except_type",
+        {
+          date_input: date,
+          local_input: local,
+          payment_method_input: paymentMethod,
+        }
+      );
+      if (error) {
+        throw new Error("Error al obtener los movimientos");
+      }
+      setMovements(data);
+      return;
+    }
     const { data, error } = await supabase.rpc(
       "get_movements_by_date_and_filters",
       {
@@ -185,6 +303,10 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     local: string,
     type: string
   ) => {
+    if (type === "all") {
+      await getMovementsByDateAndLocal(date, local);
+      return;
+    }
     const { data, error } = await supabase.rpc(
       "get_movements_by_date_and_local_and_type",
       {
@@ -250,6 +372,10 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
         deleteMovementById,
         getMonthSummary,
         getMonthSummaryTotal,
+        getMovementsByDateAndLocalWithoutSaving,
+        getMovementsByDateAndLocal,
+        getMonthSummaryByLocal,
+        getMonthSummaryTotalByLocal,
       }}
     >
       {children}
