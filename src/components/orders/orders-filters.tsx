@@ -39,17 +39,11 @@ const OrdersFilters = () => {
     if (user.role === "admin") {
       if (local === "allLocals") {
         await getOrdersByDate(
-          dayjs(date)
-            .add(1, "day")
-            .tz("America/Argentina/Buenos_Aires")
-            .format("YYYY-MM-DD")
+          dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD")
         );
       } else {
         await getByDateAndLocal(
-          dayjs(date)
-            .add(1, "day")
-            .tz("America/Argentina/Buenos_Aires")
-            .format("YYYY-MM-DD"),
+          dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
           local
         );
       }

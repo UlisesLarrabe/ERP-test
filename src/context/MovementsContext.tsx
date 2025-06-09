@@ -53,6 +53,8 @@ interface MovementsContextType {
     date: string,
     local: string
   ) => Promise<Movement[]>;
+  getMonthSummaryByLocal: (month: string, local: string) => Promise<void>;
+  getMonthSummaryTotalByLocal: (month: string, local: string) => Promise<void>;
 }
 
 export const movementsCocntext = createContext<
@@ -192,6 +194,56 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
     setMonthSummary(data);
   };
 
+  const getMonthSummaryByLocal = async (date: string, local: string) => {
+    const { data, error } = await supabase.rpc("get_month_summary_by_local", {
+      date_input: date,
+      local_input: local,
+    });
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    if (data.length === 0) {
+      setMonthSummary([
+        {
+          payment_method: "cash",
+          total: 0,
+        },
+        {
+          payment_method: "card",
+          total: 0,
+        },
+        {
+          payment_method: "mercado_pago",
+          total: 0,
+        },
+      ]);
+      return;
+    }
+    setMonthSummary(data);
+  };
+
+  const getMonthSummaryTotalByLocal = async (date: string, local: string) => {
+    const { data, error } = await supabase.rpc(
+      "get_total_month_summary_by_local",
+      {
+        date_input: date,
+        local_input: local,
+      }
+    );
+    if (error) {
+      throw new Error("Error al obtener los movimientos");
+    }
+    if (data.length === 0 || data[0].total === null) {
+      setMonthSummaryTotal([
+        {
+          total: 0,
+        },
+      ]);
+      return;
+    }
+    setMonthSummaryTotal(data);
+  };
+
   const getMonthSummaryTotal = async (date: string) => {
     const { data, error } = await supabase.rpc("get_total_month_summary", {
       date_input: date,
@@ -322,6 +374,8 @@ export function MovementsProvider({ children }: { children: React.ReactNode }) {
         getMonthSummaryTotal,
         getMovementsByDateAndLocalWithoutSaving,
         getMovementsByDateAndLocal,
+        getMonthSummaryByLocal,
+        getMonthSummaryTotalByLocal,
       }}
     >
       {children}
