@@ -4,6 +4,7 @@ import TitlePages from "@/components/title-pages";
 import Header from "@/components/header";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import SetUser from "@/components/set-user";
 
 const Pedidos = async () => {
   const verifyCookies = await cookies();
@@ -14,6 +15,7 @@ const Pedidos = async () => {
   return (
     <>
       <Header />
+      <SetUser />
       <main className="w-full flex flex-col p-4 gap-4">
         <TitlePages
           title="Gestión de pedidos"

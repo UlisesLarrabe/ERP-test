@@ -5,6 +5,7 @@ import TitlePages from "@/components/title-pages";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import MoneySummary from "@/components/money-summary";
+import SetUser from "@/components/set-user";
 
 export default async function Caja() {
   const verifyCookies = await cookies();
@@ -15,6 +16,7 @@ export default async function Caja() {
   return (
     <>
       <Header />
+      <SetUser />
       <main className="w-full flex flex-col p-4 gap-4">
         <TitlePages
           title="Arqueo de caja"
