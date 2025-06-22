@@ -29,10 +29,7 @@ const BoxFilters = () => {
       );
     } else {
       await getMovementsWithFilters(
-        dayjs(date)
-          .add(1, "day")
-          .tz("America/Argentina/Buenos_Aires")
-          .format("YYYY-MM-DD"),
+        dayjs(date).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD"),
         local,
         type,
         paymentMethod
