@@ -15,7 +15,12 @@ const ChartFilters = () => {
     .format("YYYY-MM");
   const [month, setMonth] = useState(currentMonth);
   const [local, setLocal] = useState("all");
-  const { getMonthSummary, getMonthSummaryTotal } = useMovementsContext();
+  const {
+    getMonthSummary,
+    getMonthSummaryTotal,
+    getMonthSummaryByLocal,
+    getMonthSummaryTotalByLocal,
+  } = useMovementsContext();
 
   const handleFilter = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +29,13 @@ const ChartFilters = () => {
     const firstDayOfMonth = dayjs(`${yearSelected}-${monthSelected}-01`)
       .tz("America/Argentina/Buenos_Aires")
       .format("YYYY-MM-DD");
-    await getMonthSummary(firstDayOfMonth);
-    await getMonthSummaryTotal(firstDayOfMonth);
+    if (local === "all") {
+      await getMonthSummary(firstDayOfMonth);
+      await getMonthSummaryTotal(firstDayOfMonth);
+    } else {
+      await getMonthSummaryByLocal(firstDayOfMonth, local);
+      await getMonthSummaryTotalByLocal(firstDayOfMonth, local);
+    }
   };
 
   return (
