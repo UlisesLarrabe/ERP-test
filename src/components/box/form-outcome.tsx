@@ -14,6 +14,9 @@ const FormOutcome = () => {
   const [amount, setAmount] = useState<number | null>(0);
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
+  const [date, setDate] = useState(
+    dayjs().tz("America/Argentina/Buenos_Aires")
+  );
   const { postMovement } = useMovementsContext();
 
   const isDisabled = amount === null || reason === "" || loading;
@@ -28,7 +31,7 @@ const FormOutcome = () => {
       reason,
       type: "outcome",
       payment_method: "cash",
-      created_at: dayjs().tz("America/Argentina/Buenos_Aires"),
+      created_at: date,
       client: {
         name: "Local",
         value: "local",
@@ -83,6 +86,15 @@ const FormOutcome = () => {
               onChange={(e) =>
                 setAmount(e.target.value === "" ? null : Number(e.target.value))
               }
+            />
+          </label>
+          <label className="flex flex-col gap-2">
+            <span className="font-medium">Fecha</span>
+            <input
+              type="date"
+              className="border border-eerie-black rounded-lg p-2"
+              value={date.format("YYYY-MM-DD")}
+              onChange={(e) => setDate(dayjs(e.target.value))}
             />
           </label>
           <label className="flex flex-col gap-2">
